@@ -6,12 +6,14 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import java.io.File;
 
 public class Runner {
 	
 	String path;
 	boolean verbose;
 	boolean help;
+	boolean fullpath;
 
 	public static void main(String[] args) {
 
@@ -33,12 +35,28 @@ public class Runner {
 			System.out.println("You provided \"" + path + "\" as the value of the option p");
 			
 			// TODO show the number of files in the path
+			File pathToDisplay = new File(path);
 			
 			if(verbose) {
 				
 				// TODO list all files in the path
-				
+				String[] lists = pathToDisplay.list();
+				for(String i: lists) {
+					System.out.println(i);
+				}
 				System.out.println("Your program is terminated. (This message is shown because you turned on -v option!");
+			}
+			
+			if(fullpath) {
+				// for the option '-f'
+				String[] lists = pathToDisplay.list();
+				String[] absolutePaths = new String[lists.length];
+				for(int i = 0; i < lists.length; i++) {
+					absolutePaths[i] = pathToDisplay.getAbsolutePath();
+					System.out.println(absolutePaths[i] + '/' + lists[i]);
+				}
+				
+				System.out.println("Your program is terminated. (This message is shown because you turned on -f option!");
 			}
 		}
 	}
@@ -53,6 +71,8 @@ public class Runner {
 			path = cmd.getOptionValue("p");
 			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
+			fullpath = cmd.hasOption("f");
+			
 
 		} catch (Exception e) {
 			printHelp(options);
@@ -86,6 +106,10 @@ public class Runner {
 		options.addOption(Option.builder("h").longOpt("help")
 		        .desc("Help")
 		        .build());
+		
+		options.addOption(Option.builder("f").longOpt("fullpath")
+				.desc("Display full path of the files in the directory")
+				.build());
 
 		return options;
 	}
